@@ -33,7 +33,11 @@ st.dataframe(df.tail())
 if isinstance(df.columns, pd.MultiIndex):
     df.columns = [col[0] for col in df.columns]
 
-df_model = df[['Date', 'Close']].copy()
+# Ensure we are extracting strict 1D Series to avoid any duplicate column bugs
+date_series = df['Date'].iloc[:, 0] if isinstance(df['Date'], pd.DataFrame) else df['Date']
+close_series = df['Close'].iloc[:, 0] if isinstance(df['Close'], pd.DataFrame) else df['Close']
+
+df_model = pd.DataFrame({'Date': date_series, 'Close': close_series})
 
 df_model.set_index('Date', inplace=True)
 # Fill missing business days
