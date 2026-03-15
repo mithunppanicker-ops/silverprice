@@ -29,14 +29,11 @@ st.subheader("Historical Data (Last 5 Years)")
 st.dataframe(df.tail())
 
 # Preprocessing for Time Series as Regression problem (Predicting next day based on past N days)
-df_model = df[['Date', 'Close']].copy()
-# yfinance might return MultiIndex columns for 'Close' if multiple tickers are fetched, 
-# although we just fetched one, let's ensure it's a 1D Series.
-if isinstance(df_model.columns, pd.MultiIndex):
-    df_model.columns = df_model.columns.droplevel() # Drop 'Ticker' level if it exists
+# yfinance might return MultiIndex columns
+if isinstance(df.columns, pd.MultiIndex):
+    df.columns = [col[0] for col in df.columns]
 
-df_model = df[['Date']].copy()
-df_model['Close'] = df['Close']
+df_model = df[['Date', 'Close']].copy()
 
 df_model.set_index('Date', inplace=True)
 # Fill missing business days
